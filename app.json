@@ -4,11 +4,11 @@
     "slug": "Penny",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "scheme": "penny",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {

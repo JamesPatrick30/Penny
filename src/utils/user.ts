@@ -1,15 +1,13 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
-  const result = await db.getFirstAsync<{ user_version: number }>(
-    "PRAGMA user_version",
+export async function getUser(
+  db: SQLiteDatabase,
+): Promise<{ name: string } | null> {
+  const result = await db.getFirstAsync<{ name: string }>(
+    "SELECT name FROM user LIMIT 1",
   );
-
-  if (result?.user_version === 1) return;
-
-  return db.execAsync(`PRAGMA user_version = 1`);
+  return result || null;
 }
-
 export async function setUser(db: SQLiteDatabase, name: string): Promise<void> {
   return db
     .runAsync("INSERT INTO user (name) VALUES (?)", [name])

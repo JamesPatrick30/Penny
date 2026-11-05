@@ -1,6 +1,7 @@
 import { AppText } from "@/components/ui/AppText";
 import { COLORS } from "@/theme/colors";
 import { useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
@@ -10,6 +11,7 @@ import Animated, {
     withSpring,
     withTiming,
 } from "react-native-reanimated";
+import { getUser } from "../utils/user";
 
 export default function Opening() {
   const opacity = useSharedValue(0);
@@ -17,13 +19,30 @@ export default function Opening() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      router.replace("/opening");
-    }, 2500); // 2.5 seconds
+  const db = useSQLiteContext();
 
-    return () => clearTimeout(timeout);
-  }, [router]);
+  useEffect(() => {
+    const userCheck = async () => {
+      const user = await getUser(db);
+      if (user) {
+        const timeout = setTimeout(() => {
+          router.replace("/opening");
+        }, 1500); // 2.5 seconds
+
+        clearTimeout(timeout);
+        router.replace("/(tabs)");
+      } else {
+        const timeout = setTimeout(() => {
+          router.replace("/opening");
+        }, 2500); // 2.5 seconds
+
+        clearTimeout(timeout);
+        router.replace("/onboarding");
+      }
+    };
+
+    userCheck();
+  }, []);
 
   useEffect(() => {
     opacity.value = withTiming(1, {

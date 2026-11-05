@@ -7,7 +7,6 @@ export interface Allowance {
   note: string | null;
   date: string;
   created_at: string;
-  updated_at: string | null;
 }
 
 // Convert PHP pesos into integer cents.
@@ -51,6 +50,40 @@ export async function setAllowance(
   return result.lastInsertRowId;
 }
 
+// get today's total allowance
+export async function getTodayTotalAllowance(
+  db: SQLiteDatabase,
+): Promise<number | null> {
+  const today = getLocalDate();
+  return db
+    .getFirstAsync<Allowance>(
+      `SELECT *
+     FROM daily_allowances
+     WHERE date = ?`,
+      today,
+    )
+    .then((result) => {
+      if (result) {
+        return result.amount_cents;
+      }
+      return null;
+    });
+}
+
+// Get all allowances for today
+export async function getAllAllowancesForToday(
+  db: SQLiteDatabase,
+): Promise<Allowance[]> {
+  const today = getLocalDate();
+
+  return db.getAllAsync<Allowance>(
+    `SELECT *
+     FROM daily_allowances
+     WHERE date = ?
+     ORDER BY created_at ASC, id ASC`,
+    today,
+  );
+}
 // READ ONE BY ID
 export async function getAllowanceById(
   db: SQLiteDatabase,

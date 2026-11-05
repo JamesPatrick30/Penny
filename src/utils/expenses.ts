@@ -101,6 +101,21 @@ export async function getExpenses(
 }
 
 // ==========================================
+// GET TOTAL EXPENSES TODAY
+// ==========================================
+export async function getTotalExpensesToday(
+  db: SQLiteDatabase,
+): Promise<number> {
+  const today = getLocalDate();
+  const result = await db.getFirstAsync<{ total: number }>(
+    `SELECT COALESCE(SUM(amount_cents), 0) AS total
+     FROM expenses
+     WHERE date = ?`,
+    today,
+  );
+  return result?.total ?? 0;
+}
+// ==========================================
 // READ BY ID
 // ==========================================
 
